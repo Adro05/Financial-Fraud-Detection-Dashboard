@@ -34,6 +34,14 @@ if uploaded_file is not None:
         df["Fraud"] = model.fit_predict(df[numeric_columns])
 
         fraud_count = (df["Fraud"] == -1).sum()
+        if "Class" in df.columns:
+
+            actual_fraud = df["Class"].sum()
+
+            st.metric(
+                    "Actual Fraud Cases",
+            int(actual_fraud)
+            )
 
         st.subheader("🚨 Fraud Detection Summary")
 
