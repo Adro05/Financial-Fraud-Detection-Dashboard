@@ -346,7 +346,7 @@ if data_loaded:
             
         # Ground Truth check
         ground_truth_available = ground_truth_col is not None
-        match_rate_html = ""
+        match_rate_card = ""
         
         if ground_truth_available:
             # Ensure ground truth is binary integer
@@ -367,45 +367,15 @@ if data_loaded:
             f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
             accuracy = ((tp + tn) / total_tx) * 100.0
             
-            # Display Match Rate / Accuracy
-            match_rate_html = f"""
-            <div class="metric-card success">
-                <div class="metric-title">🎯 Model Accuracy</div>
-                <div class="metric-value green">{accuracy:.1f}%</div>
-                <div class="metric-subtitle">F1-Score: {f1/100:.2f} | Rec: {recall:.1f}%</div>
-            </div>
-            """
+            # Display Match Rate / Accuracy (Compact single-line string avoids markdown code block conversion)
+            match_rate_card = f'<div class="metric-card success"><div class="metric-title">🎯 Model Accuracy</div><div class="metric-value green">{accuracy:.1f}%</div><div class="metric-subtitle">F1-Score: {f1/100:.2f} | Rec: {recall:.1f}%</div></div>'
         else:
-            # Fallback if no ground truth
-            match_rate_html = f"""
-            <div class="metric-card success">
-                <div class="metric-title">📡 Engine Status</div>
-                <div class="metric-value green">ACTIVE</div>
-                <div class="metric-subtitle">Unsupervised Model Running</div>
-            </div>
-            """
+            # Fallback if no ground truth (Compact single-line string avoids markdown code block conversion)
+            match_rate_card = f'<div class="metric-card success"><div class="metric-title">📡 Engine Status</div><div class="metric-value green">ACTIVE</div><div class="metric-subtitle">Unsupervised Model Running</div></div>'
             
-        # Render the dynamic glassmorphic grid
-        st.markdown(f"""
-        <div class="metrics-container">
-            <div class="metric-card">
-                <div class="metric-title">💳 Volume Processed</div>
-                <div class="metric-value indigo">{volume_text}</div>
-                <div class="metric-subtitle">Across {total_tx:,} transactions</div>
-            </div>
-            <div class="metric-card alert">
-                <div class="metric-title">🚨 Flagged Anomalies</div>
-                <div class="metric-value red">{suspicious_tx:,}</div>
-                <div class="metric-subtitle">Flagged volume: {flagged_volume_text}</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-title">📉 Anomaly Ratio</div>
-                <div class="metric-value">{(anomaly_ratio):.2f}%</div>
-                <div class="metric-subtitle">Target rate: {contamination*100:.2f}%</div>
-            </div>
-            {match_rate_html}
-        </div>
-        """, unsafe_allow_html=True)
+        # Render the dynamic glassmorphic grid cleanly using standard HTML
+        metrics_html = f"""<div class="metrics-container"><div class="metric-card"><div class="metric-title">💳 Volume Processed</div><div class="metric-value indigo">{volume_text}</div><div class="metric-subtitle">Across {total_tx:,} transactions</div></div><div class="metric-card alert"><div class="metric-title">🚨 Flagged Anomalies</div><div class="metric-value red">{suspicious_tx:,}</div><div class="metric-subtitle">Flagged volume: {flagged_volume_text}</div></div><div class="metric-card"><div class="metric-title">📉 Anomaly Ratio</div><div class="metric-value">{(anomaly_ratio):.2f}%</div><div class="metric-subtitle">Target rate: {contamination*100:.2f}%</div></div>{match_rate_card}</div>"""
+        st.markdown(metrics_html, unsafe_allow_html=True)
         
         # 8. High-Dimensional Visualizations
         st.markdown('<div class="custom-hr"></div>', unsafe_allow_html=True)
